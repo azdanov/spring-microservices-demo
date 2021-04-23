@@ -7,6 +7,7 @@ import org.js.azdanov.notificationservice.config.RabbitMqConfig;
 import org.js.azdanov.notificationservice.service.dto.DepositResponseDto;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,10 @@ public class DepositMessageHandler {
         mailMessage.setSubject("Deposit");
         mailMessage.setText("Make deposit, sum:" + depositResponseDto.getAmount());
 
-        javaMailSender.send(mailMessage);
+        try {
+            javaMailSender.send(mailMessage);
+        } catch (MailException e) {
+            System.out.println(e);
+        }
     }
 }

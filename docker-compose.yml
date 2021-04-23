@@ -1,0 +1,83 @@
+version: '3.8'
+services:
+  configuration:
+    container_name: configuration
+    build: configuration
+    ports:
+      - 8001:8001
+  registry:
+    container_name: registry
+    restart: always
+    build: registry
+    ports:
+      - 8761:8761
+    depends_on:
+      - configuration
+  gateway:
+    container_name: gateway
+    restart: always
+    build: gateway
+    ports:
+      - 8989:8989
+    depends_on:
+      - configuration
+      - registry
+  account-service:
+    restart: on-failure
+    container_name: account-service
+    build: account-service
+    ports:
+      - 8081:8081
+    depends_on:
+      - configuration
+      - registry
+      - postgres
+  bill-service:
+    restart: on-failure
+    container_name: bill-service
+    build: bill-service
+    ports:
+      - 8082:8082
+    depends_on:
+      - configuration
+      - registry
+      - postgres
+  deposit-service:
+    restart: on-failure
+    container_name: deposit-service
+    build: deposit-service
+    ports:
+      - 9090:9090
+    depends_on:
+      - configuration
+      - registry
+      - postgres
+  notification-service:
+    restart: on-failure
+    container_name: notification-service
+    build: notification-service
+    depends_on:
+      - configuration
+      - registry
+      - postgres
+  rabbitmq: # login guest:guest
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    depends_on:
+      - configuration
+      - registry
+      - account-service
+  postgres:
+    image: 'postgres:13.2-alpine'
+    container_name: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ./pg-init-scripts:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_MULTIPLE_DATABASES=accounts,bills,deposits

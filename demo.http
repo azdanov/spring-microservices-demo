@@ -1,0 +1,40 @@
+###
+POST http://localhost:8989/accounts/
+Content-Type: application/json
+
+{
+  "name": "Anton",
+  "email": "anton@xyz.com",
+  "phone": "+123456798",
+  "bills": [1]
+}
+
+###
+POST http://localhost:8989/bills/
+Content-Type: application/json
+
+{
+  "accountId": 1,
+  "amount": 0,
+  "isDefault": true,
+  "overdraftEnabled": true
+}
+
+###
+POST http://localhost:8989/deposits/
+Content-Type: application/json
+
+{
+  "accountId": 1,
+  "amount": 3000
+}
+
+###
+POST http://localhost:8989/deposits/
+Content-Type: application/json
+
+{
+  "billId": 1,
+  "amount": 1000
+}
+
